@@ -1,0 +1,53 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+
+    <h1>Listing: {{ listing.title }}</h1>
+    <div>Watchlist indicator</div>
+    <div>
+        <img class="fit-picture" src="{{ listing.image_url }}" alt="{{ listing.title }}">
+    </div>
+    <div>
+        <p>{{ listing.description }}</p>
+    </div>
+    <h2>
+        {% if current_bid %}
+            $ {{ current_bid.amount }}
+        {% else %}
+            $ {{ listing.starting_bid }}
+        {% endif %}
+    </h2>
+    <div>
+        <p> {{ bids|length }} bid(s) so far.
+            {% if current_bid.bidder == user %}
+                Your bid is the current bid.
+            {% endif %}
+        </p>
+    </div>
+
+    <form action="{% url 'bid_on_listing' listing.id %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control" type="number" name="bid_amount" placeholder="Bid on this listing">
+        </div>
+        <input class="btn btn-primary" type="submit" value="Bid">
+    </form>
+
+    <h2>Details</h2>
+    <ul>
+        <li>Listed by: <a href="">{{ listing.seller }}</a></li>
+        <li>
+            {% if listing.category %}
+                Category: {{ listing.category }}
+            {% else %}
+                Category: No Category Listed
+            {% endif %}
+        </li>
+    </ul>
+
+    <h2>Comments</h2>
+
+
+    
+
+{% endblock %}
