@@ -101,11 +101,12 @@ def listing_view(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     bids = listing.bids.all()
     current_bid = listing.bids.last()
-
+    comments = listing.comments.all()
     return render(request, 'auctions/listing.html', {
         'listing' : listing,
         'bids' : bids,
-        'current_bid' : current_bid
+        'current_bid' : current_bid,
+        'comments' : comments
     })
 
 def bid_on_listing(request, listing_id):
@@ -134,3 +135,25 @@ def bid_on_listing(request, listing_id):
         # reload page with an error
         messages.error(request, 'Your bid has to be higher than current bid!')
         return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
+
+def comment_on_listing(request, listing_id):
+    # get listing and author
+    listing = Listing.objects.get(pk=listing_id)
+    author = User.objects.get(pk=request.user.id)
+    # validate comment
+    content = request.POST["posted_comment_content"]
+    if content.strip() == "":
+            messages.error(request, "Cannot post empty comment.")
+            return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
+    try:
+        comment = Comment(
+            listing = listing,
+            author = author,
+            content = content
+        )
+        comment.save()
+    except IntegrityError:
+        messages.error(request, "Comment invalid.")
+        return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
+    
+    return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
