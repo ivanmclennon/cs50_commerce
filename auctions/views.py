@@ -77,8 +77,11 @@ def create_listing(request):
             return render(request, 'auctions/create_listing.html')
         # optional - category, image_url
         category = request.POST['category']
+        image_url = request.POST['image_url']
         if category.strip() == "":
             category = "No Category Listed"
+        if image_url.strip() == "":
+            image_url = "static/auctions/no-image.png"
         # create listing
         try:
             listing = Listing(
@@ -87,7 +90,7 @@ def create_listing(request):
                 category = category,
                 title = title,
                 description = description,
-                image_url = request.POST['image_url']
+                image_url = image_url
             )
             listing.save()
         except IntegrityError:

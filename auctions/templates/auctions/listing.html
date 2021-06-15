@@ -5,11 +5,9 @@
     <h1>Listing: {{ listing.title }}</h1>
     <div>Watchlist indicator</div>
     
-    {% if listing.image_url %}
-        <div>
-            <img class="fit-picture" src="{{ listing.image_url }}" alt="{{ listing.title }}">
-        </div>
-    {% endif %}
+    <div>
+        <img class="fit-picture" src="{{ listing.image_url }}" alt="{{ listing.title }}">
+    </div>
     
     <div>
         <p>{{ listing.description }}</p>

@@ -7,7 +7,7 @@ class BidAdmin(admin.ModelAdmin):
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'is_active' ,'seller','title', 'description', 'starting_bid')
+    list_display = ('id', 'is_active', 'category', 'seller','title', 'description', 'starting_bid')
 
     def bids_display(self, obj):
         return ", ".join([
