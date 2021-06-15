@@ -157,3 +157,15 @@ def comment_on_listing(request, listing_id):
         return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
     
     return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
+
+def close_listing(request, listing_id):
+    # get listing
+    listing = Listing.objects.get(pk=listing_id)
+    try:
+        listing.buyer = listing.bids.last().bidder
+        messages.success(request, f"Listing sold to {listing.buyer.username} for ${listing.bids.last().amount}!")       
+    except AttributeError:
+        messages.warning(request, "No bids have been placed, listing closed with no buyer.")
+    listing.is_active = False
+    listing.save()
+    return HttpResponseRedirect(reverse('index'))

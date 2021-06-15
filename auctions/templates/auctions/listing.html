@@ -41,7 +41,16 @@
 
     {% else %}
 
-        <h3>Close listing button</h3>
+        <div class="d-flex flex-row">
+            <div class="p-2">
+                <h4>Close this auction?</h4>
+            </div>
+            <div class="p-2">
+                <form action="{% url 'close_listing' listing.id %}">
+                    <input class="btn btn-primary" type="submit" value="Close">
+                </form>
+            </div>
+        </div>
 
     {% endif %}
     <h2>Details</h2>
