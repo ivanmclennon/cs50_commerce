@@ -68,21 +68,36 @@ def register(request):
 @login_required
 def create_listing(request):
     if request.method == "POST":
+        # validate inputs ------------ TODO implement django validation
+        # required - title, description, starting bid
+        title = request.POST['title']
+        description = request.POST['description']
+        if title.strip() == "" or description.strip() == "":
+            messages.error(request, "Title or description invalid.")
+            return render(request, 'auctions/create_listing.html')
+        # optional - category, image_url
+        category = request.POST['category']
+        if category.strip() == "":
+            category = "No Category Listed"
         # create listing
-        listing = Listing(
-            seller = User.objects.get(pk=request.user.id),
-            starting_bid = request.POST['starting_bid'],
-            category = request.POST['category'],
-            title = request.POST['title'],
-            description = request.POST['description'],
-            image_url = request.POST['image_url']
-        )
-        listing.save()
+        try:
+            listing = Listing(
+                seller = User.objects.get(pk=request.user.id),
+                starting_bid = request.POST['starting_bid'],
+                category = category,
+                title = title,
+                description = description,
+                image_url = request.POST['image_url']
+            )
+            listing.save()
+        except IntegrityError:
+            messages.error(request, "Invalid inputs.")
+            return render(request, 'auctions/create_listing.html')
         return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
     else:
         return render(request, 'auctions/create_listing.html')
 
-def listing_view(request, listing_id, message=''):
+def listing_view(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     bids = listing.bids.all()
     current_bid = listing.bids.last()
@@ -90,8 +105,7 @@ def listing_view(request, listing_id, message=''):
     return render(request, 'auctions/listing.html', {
         'listing' : listing,
         'bids' : bids,
-        'current_bid' : current_bid,
-        'message' : message
+        'current_bid' : current_bid
     })
 
 def bid_on_listing(request, listing_id):
@@ -118,5 +132,5 @@ def bid_on_listing(request, listing_id):
         return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
     else:
         # reload page with an error
-        messages.info(request, 'Your bid has to be higher than current bid!')
+        messages.error(request, 'Your bid has to be higher than current bid!')
         return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))

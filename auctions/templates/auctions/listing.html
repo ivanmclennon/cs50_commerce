@@ -4,9 +4,13 @@
 
     <h1>Listing: {{ listing.title }}</h1>
     <div>Watchlist indicator</div>
-    <div>
-        <img class="fit-picture" src="{{ listing.image_url }}" alt="{{ listing.title }}">
-    </div>
+    
+    {% if listing.image_url %}
+        <div>
+            <img class="fit-picture" src="{{ listing.image_url }}" alt="{{ listing.title }}">
+        </div>
+    {% endif %}
+    
     <div>
         <p>{{ listing.description }}</p>
     </div>
@@ -25,29 +29,28 @@
         </p>
     </div>
 
-    <form action="{% url 'bid_on_listing' listing.id %}" method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-            <input class="form-control" type="number" name="bid_amount" placeholder="Bid on this listing">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Bid">
-    </form>
+    {% if listing.seller != user %}
 
+        <form action="{% url 'bid_on_listing' listing.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" required type="number" name="bid_amount" placeholder="Bid on this listing">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Bid">
+        </form>
+
+    {% else %}
+
+        <h3>Close listing button</h3>
+
+    {% endif %}
     <h2>Details</h2>
     <ul>
         <li>Listed by: <a href="">{{ listing.seller }}</a></li>
-        <li>
-            {% if listing.category %}
-                Category: {{ listing.category }}
-            {% else %}
-                Category: No Category Listed
-            {% endif %}
-        </li>
+        <li>Category: {{ listing.category }}</li>
     </ul>
 
     <h2>Comments</h2>
-
-
     
 
 {% endblock %}

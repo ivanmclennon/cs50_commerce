@@ -15,7 +15,7 @@ class Listing(models.Model):
     starting_bid = models.IntegerField()
     title = models.CharField(max_length=64)
     description = models.CharField(max_length=512)
-    category = models.CharField(max_length=32)
+    category = models.CharField(max_length=32, default="No Category Listed")
     image_url = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
     watchers = models.ManyToManyField(User, blank=True, related_name='watchlist')
