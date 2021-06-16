@@ -16,10 +16,10 @@ class Listing(models.Model):
     title = models.CharField(max_length=64)
     description = models.CharField(max_length=512)
     category = models.CharField(max_length=32, default="No Category Listed")
-    image_url = models.CharField(max_length=128)
+    image_url = models.CharField(max_length=128, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     watchers = models.ManyToManyField(User, blank=True, related_name='watchlist')
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchases', null=True)
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchases', null=True, blank=True)
 
     
 class Bid(models.Model):

@@ -6,7 +6,11 @@
     <div>Watchlist indicator</div>
     
     <div>
-        <img class="fit-picture" src="{{ listing.image_url }}" alt="{{ listing.title }}">
+        {% if listing.image_url %}
+            <img class="" src="{{ listing.image_url }}">
+        {% else %}
+            <img class="" src="/static/auctions/no-image.png">
+        {% endif %}
     </div>
     
     <div>

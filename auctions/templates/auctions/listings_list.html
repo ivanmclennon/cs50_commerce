@@ -1,0 +1,33 @@
+<div class="list-group mr-5">
+
+    {% for listing in listings %}
+                    
+        <div class="card col-12 m-3 pl-5 justify-content-center" style="height: 200px;">
+            <div class="row ">
+                <div class="col-sm-3">
+                    {% if listing.image_url %}
+                        <img class="card-img" src="{{ listing.image_url }}">
+                    {% else %}
+                        <img class="card-img" src="/static/auctions/no-image.png">
+                    {% endif %}
+                </div>
+                <div class="col-sm-7">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {% if listing.bids.last %}
+                                Price: $ {{ listing.bids.last.amount }}
+                            {% else %}
+                                Price: $ {{ listing.starting_bid }}
+                            {% endif %}
+                        </h6>
+                        <div class="card-text">{{ listing.description }}</div>
+                        <a href="{% url 'listing' listing.id %}" class="card-link">View Listing</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+
+</div>

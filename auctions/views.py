@@ -9,9 +9,10 @@ from django.urls import reverse
 from .models import User, Listing, Bid, Comment
 
 
-def index(request):
+def index(request,name="Active Listings"):
     return render(request, "auctions/index.html", {
-        'listings': Listing.objects.filter(is_active=True)
+        'listings': Listing.objects.filter(is_active=True),
+        'name' : name
     })
 
 
@@ -65,6 +66,21 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+def categories(request):
+    # get all unique category values
+    categories = Listing.objects.order_by().values_list('category',flat=True).distinct()
+    return render(request, "auctions/categories.html", {
+        "categories" : categories
+    })
+
+def category_listings(request, category):
+    name = f"Category: {category}"
+    listings = Listing.objects.filter(category=category, is_active=True)
+    return render(request, "auctions/category_listings.html", {
+        "listings" : listings,
+        "name" : name
+    })
+
 @login_required
 def create_listing(request):
     if request.method == "POST":
@@ -81,7 +97,7 @@ def create_listing(request):
         if category.strip() == "":
             category = "No Category Listed"
         if image_url.strip() == "":
-            image_url = "static/auctions/no-image.png"
+            image_url = None
         # create listing
         try:
             listing = Listing(
