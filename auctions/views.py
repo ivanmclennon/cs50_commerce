@@ -143,10 +143,7 @@ def listing_view(request, listing_id):
     current_bid = listing.bids.last()
     comments = listing.comments.all()
     return render(request, 'auctions/listing.html', {
-        'listing' : listing,
-        'bids' : bids,
-        'current_bid' : current_bid,
-        'comments' : comments
+        'listing' : listing
     })
 
 @login_required
