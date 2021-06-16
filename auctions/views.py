@@ -68,7 +68,7 @@ def register(request):
 
 def categories(request):
     # get all unique category values
-    categories = Listing.objects.order_by().values_list('category',flat=True).distinct()
+    categories = Listing.objects.filter(is_active=True).order_by().values_list('category',flat=True).distinct()
     return render(request, "auctions/categories.html", {
         "categories" : categories
     })
@@ -79,6 +79,27 @@ def category_listings(request, category):
     return render(request, "auctions/category_listings.html", {
         "listings" : listings,
         "name" : name
+    })
+
+@login_required
+def toggle_watchlist(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    user = User.objects.get(username=request.user.username)
+    if listing in user.watchlist.all():
+        user.watchlist.remove(listing)
+        messages.warning(request, "Listing removed from watchlist!")
+    else:
+        user.watchlist.add(listing)
+        messages.success(request, "Listing added to watchlist!")
+    user.save()
+    listing.save()
+    return HttpResponseRedirect(reverse('listing', args=(listing.id,)))
+
+def watchlist_view(request):
+    user = User.objects.get(username=request.user.username)
+    listings = user.watchlist.all()
+    return render(request, "auctions/watchlist.html", {
+        "listings" : listings
     })
 
 @login_required
@@ -128,6 +149,7 @@ def listing_view(request, listing_id):
         'comments' : comments
     })
 
+@login_required
 def bid_on_listing(request, listing_id):
     # get listing
     listing = Listing.objects.get(pk=listing_id)
@@ -155,6 +177,7 @@ def bid_on_listing(request, listing_id):
         messages.error(request, 'Your bid has to be higher than current bid!')
         return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
 
+@login_required
 def comment_on_listing(request, listing_id):
     # get listing and author
     listing = Listing.objects.get(pk=listing_id)
@@ -177,6 +200,7 @@ def comment_on_listing(request, listing_id):
     
     return HttpResponseRedirect(reverse('listing', args=(listing.pk,)))
 
+@login_required
 def close_listing(request, listing_id):
     # get listing
     listing = Listing.objects.get(pk=listing_id)
